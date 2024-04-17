@@ -3,6 +3,7 @@ extends Area2D
 
 const SIZE = 16
 const ACCELERATION = 1
+const HORIZONTAL_VELOCITY = 1
 
 var velocity = Vector2.ZERO
 var local_planet: Area2D = null
@@ -20,6 +21,7 @@ func _process(delta):
 		
 	var direction = position - local_planet.position
 	position += velocity * delta * direction.normalized()
+	position += direction.normalized().orthogonal() * HORIZONTAL_VELOCITY
 	velocity += ACCELERATION * delta * direction.normalized()
 
 
