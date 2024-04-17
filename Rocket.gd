@@ -3,6 +3,7 @@ extends Area2D
 
 const SIZE = 16
 const HORIZONTAL_VELOCITY = 70
+# a few standard orders out, but helps for simplicity
 const GRAVITATIONAL_CONSTANT = 6.674
 
 var acceleration = Vector2.ZERO
