@@ -1,6 +1,7 @@
 extends Area2D
 
 @export var radius_px = 100
+@export var mass = 100000
 
 
 # Called when the node enters the scene tree for the first time.
