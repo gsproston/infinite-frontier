@@ -2,6 +2,10 @@ extends Area2D
 
 
 const SIZE = 16
+const ACCELERATION = 1
+
+var velocity = Vector2.ZERO
+var local_planet: Area2D = null
 
 
 # Called when the node enters the scene tree for the first time.
@@ -11,9 +15,15 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	if (local_planet == null):
+		return
+		
+	var direction = position - local_planet.position
+	position += velocity * delta * direction.normalized()
+	velocity += ACCELERATION * delta * direction.normalized()
 
 
 func _draw():
 	draw_rect(Rect2(-SIZE/2, -SIZE/2, SIZE, SIZE), Color.LIGHT_GREEN)
+	draw_rect(Rect2(-1, -1, 2, 2), Color.RED)
 

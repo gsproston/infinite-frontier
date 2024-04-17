@@ -5,6 +5,7 @@ extends Node
 func _ready():
 	# Start the rocket above the planet
 	$Rocket.position = $Planet.position - Vector2(0, $Planet.radius_px * 1.5)
+	$Rocket.local_planet = $Planet
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
