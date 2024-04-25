@@ -25,11 +25,26 @@ func _process(delta):
 	acceleration = direction.normalized() * GRAVITATIONAL_CONSTANT * (local_planet.mass / direction.length_squared())
 	velocity += acceleration * delta
 	position += velocity * delta
+	
+	var gravitational_parameter = GRAVITATIONAL_CONSTANT * local_planet.mass
+	var specific_angular_momentum = direction.cross(velocity)
+	var semilatus_rectum = pow(specific_angular_momentum, 2) / gravitational_parameter
+	# TODO actually calculate this
+	var orbital_eccentricity = 0
+	
+	queue_redraw()
 
 
 func _draw():
 	draw_rect(Rect2(-SIZE/2, -SIZE/2, SIZE, SIZE), Color.LIGHT_GREEN)
 	draw_rect(Rect2(-1, -1, 2, 2), Color.RED)
+	
+	if (local_planet):
+		draw_arc(
+			local_planet.position - position, 
+			position.distance_to(local_planet.position), 
+			0, TAU, 128, Color.AQUA
+		)
 	
 	
 func set_local_planet(planet: Area2D):
