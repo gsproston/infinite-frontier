@@ -25,17 +25,39 @@ func _process(delta):
 	acceleration = direction.normalized() * GRAVITATIONAL_CONSTANT * (local_planet.mass / direction.length_squared())
 	velocity += acceleration * delta
 	position += velocity * delta
+	
+	queue_redraw()
 
 
 func _draw():
-	draw_rect(Rect2(-SIZE/2, -SIZE/2, SIZE, SIZE), Color.LIGHT_GREEN)
+	draw_rect(Rect2(-SIZE / 2.0, -SIZE / 2.0, SIZE, SIZE), Color.LIGHT_GREEN)
 	draw_rect(Rect2(-1, -1, 2, 2), Color.RED)
+	
+	if (local_planet):
+		var direction = local_planet.position - position
+		var gravitational_parameter = GRAVITATIONAL_CONSTANT * local_planet.mass
+		var specific_angular_momentum = direction.cross(velocity)
+		var semilatus_rectum = pow(specific_angular_momentum, 2) / gravitational_parameter
+		var specific_orbital_energy = velocity.length_squared() / 2 - gravitational_parameter / position.distance_to(local_planet.position)
+		var orbital_eccentricity = sqrt(1 + (2 * specific_orbital_energy * pow(specific_angular_momentum, 2)) / pow(gravitational_parameter, 2))
+		
+		var num_points = 128
+		var points = PackedVector2Array()
+		
+		for n in num_points:
+			var theta = (float(n) / num_points) * TAU
+			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta))
+			points.append(r * Vector2.from_angle(theta) + direction)
+		# close the loop
+		points.append(points[0])
+	
+		draw_polyline(points, Color.AQUA, 0.5, true)
 	
 	
 func set_local_planet(planet: Area2D):
 	local_planet = planet
 	# set the rocket's position
-	position = local_planet.position - Vector2(0, local_planet.radius_px * 1.5)
+	position = local_planet.position - Vector2(local_planet.radius_px * -1.5, 0)
 	
 	# give the rocket some horizontal motion to get it falling
 	var direction = local_planet.position - position
