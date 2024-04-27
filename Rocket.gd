@@ -2,7 +2,7 @@ extends Area2D
 
 
 const SIZE = 16
-const HORIZONTAL_VELOCITY = 70
+const HORIZONTAL_VELOCITY = 80
 # a few standard orders out, but helps for simplicity
 const GRAVITATIONAL_CONSTANT = 6.674
 
@@ -30,8 +30,9 @@ func _process(delta):
 
 
 func _draw():
-	draw_rect(Rect2(-SIZE / 2.0, -SIZE / 2.0, SIZE, SIZE), Color.LIGHT_GREEN)
-	draw_rect(Rect2(-1, -1, 2, 2), Color.RED)
+	draw_rect(Rect2(-SIZE / 4.0, -SIZE / 2.0, SIZE / 2.0, SIZE), Color.LIGHT_GREEN)
+	draw_line(Vector2.ZERO, velocity, Color.RED)
+	draw_line(Vector2.ZERO, acceleration, Color.PURPLE)
 	
 	if (local_planet):
 		var direction = local_planet.position - position
