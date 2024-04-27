@@ -1,8 +1,8 @@
 extends Area2D
 
 
-const SIZE = 16
-const HORIZONTAL_VELOCITY = 70
+const SIZE = 8
+const HORIZONTAL_VELOCITY = 80
 # a few standard orders out, but helps for simplicity
 const GRAVITATIONAL_CONSTANT = 6.674
 
@@ -27,12 +27,9 @@ func _process(delta):
 	position += velocity * delta
 	
 	queue_redraw()
-
-
-func _draw():
-	draw_rect(Rect2(-SIZE / 2.0, -SIZE / 2.0, SIZE, SIZE), Color.LIGHT_GREEN)
-	draw_rect(Rect2(-1, -1, 2, 2), Color.RED)
 	
+	
+func draw_orbit():
 	if (local_planet):
 		var direction = local_planet.position - position
 		var gravitational_parameter = GRAVITATIONAL_CONSTANT * local_planet.mass
@@ -52,6 +49,24 @@ func _draw():
 		points.append(points[0])
 	
 		draw_polyline(points, Color.AQUA, 0.5, true)
+		
+		
+func draw_rocket():
+	var angle = velocity.angle() + PI / 2.0
+	var points = PackedVector2Array()
+	points.append(Vector2(SIZE / 2.0, SIZE).rotated(angle))
+	points.append(Vector2(SIZE / 2.0, -SIZE).rotated(angle))
+	points.append(Vector2(-SIZE / 2.0, -SIZE).rotated(angle))
+	points.append(Vector2(-SIZE / 2.0, SIZE).rotated(angle))
+	draw_colored_polygon(points, Color.LIGHT_GREEN)
+	
+	draw_line(Vector2.ZERO, velocity, Color.RED)
+	draw_line(Vector2.ZERO, acceleration, Color.PURPLE)
+
+
+func _draw():	
+	draw_orbit()	
+	draw_rocket()	
 	
 	
 func set_local_planet(planet: Area2D):
