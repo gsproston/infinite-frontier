@@ -9,7 +9,6 @@ const GRAVITATIONAL_CONSTANT = 6.674
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
 var local_planet: Area2D = null
-var start_angle = 0
 
 
 # Called when the node enters the scene tree for the first time.
@@ -26,6 +25,11 @@ func _process(delta):
 	acceleration = direction.normalized() * GRAVITATIONAL_CONSTANT * (local_planet.mass / direction.length_squared())
 	velocity += acceleration * delta
 	position += velocity * delta
+	
+	if Input.is_action_pressed("accelerate"):
+		velocity += velocity.normalized() * delta * 10
+	elif Input.is_action_pressed("decelerate"):
+		velocity -= velocity.normalized() * delta * 10
 	
 	queue_redraw()
 	
@@ -44,7 +48,7 @@ func draw_orbit():
 		
 		for n in num_points:
 			var theta = (float(n) / num_points) * TAU
-			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta + start_angle))
+			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta))
 			points.append(r * Vector2.from_angle(theta) + direction)
 		# close the loop
 		points.append(points[0])
@@ -73,11 +77,10 @@ func _draw():
 func set_local_planet(planet: Area2D):
 	local_planet = planet
 	# set the rocket's position
-	position = local_planet.position - Vector2(local_planet.radius_px * 1.5, 0)
+	position = local_planet.position - Vector2(local_planet.radius_px * -1.5, 0)
 	
 	# give the rocket some horizontal motion to get it falling
 	var direction = local_planet.position - position
-	start_angle = direction.angle() + PI
 	velocity = direction.normalized().orthogonal() * HORIZONTAL_VELOCITY
 	
 
