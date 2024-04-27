@@ -2,14 +2,12 @@ extends Area2D
 
 
 const SIZE = 8
-const HORIZONTAL_VELOCITY = 80
 # a few standard orders out, but helps for simplicity
 const GRAVITATIONAL_CONSTANT = 6.674
 
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
 var local_planet: Area2D = null
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -45,13 +43,18 @@ func draw_orbit():
 		eccentricity_vector = eccentricity_vector - (direction.dot(velocity) / gravitational_parameter) * velocity
 		var orbital_eccentricity = eccentricity_vector.length()
 		
+		var distance_to_planet = position.distance_to(local_planet.position)
+		var expected_angle = acos((semilatus_rectum / distance_to_planet - 1) / orbital_eccentricity)
+		var actual_angle = direction.angle()
+		var angle_diff = actual_angle - expected_angle
+		
 		var num_points = 128
 		var points = PackedVector2Array()
 		
 		for n in num_points:
 			var theta = (float(n) / num_points) * TAU
 			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta))
-			points.append(r * Vector2.from_angle(theta) + direction)
+			points.append(r * Vector2.from_angle(theta + angle_diff) + direction)
 		# close the loop
 		points.append(points[0])
 	
@@ -79,10 +82,10 @@ func _draw():
 func set_local_planet(planet: Area2D):
 	local_planet = planet
 	# set the rocket's position
-	position = local_planet.position - Vector2(local_planet.radius_px * -1.5, 0)
+	position = local_planet.position - Vector2(local_planet.radius_px * 1.5, 0)
 	
 	# give the rocket some horizontal motion to get it falling
 	var direction = local_planet.position - position
-	velocity = direction.normalized().orthogonal() * HORIZONTAL_VELOCITY
+	velocity = direction.normalized().rotated(PI /3) * 70
 	
 
