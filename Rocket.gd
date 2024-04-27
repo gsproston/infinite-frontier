@@ -40,8 +40,10 @@ func draw_orbit():
 		var gravitational_parameter = GRAVITATIONAL_CONSTANT * local_planet.mass
 		var specific_angular_momentum = direction.cross(velocity)
 		var semilatus_rectum = pow(specific_angular_momentum, 2) / gravitational_parameter
-		var specific_orbital_energy = velocity.length_squared() / 2 - gravitational_parameter / position.distance_to(local_planet.position)
-		var orbital_eccentricity = sqrt(1 + (2 * specific_orbital_energy * pow(specific_angular_momentum, 2)) / pow(gravitational_parameter, 2))
+		
+		var eccentricity_vector = (pow(velocity.length(), 2) / gravitational_parameter - 1 / direction.length()) * direction
+		eccentricity_vector = eccentricity_vector - (direction.dot(velocity) / gravitational_parameter) * velocity
+		var orbital_eccentricity = eccentricity_vector.length()
 		
 		var num_points = 128
 		var points = PackedVector2Array()
