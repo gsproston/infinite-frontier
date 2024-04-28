@@ -95,9 +95,10 @@ func set_local_planet(planet: Area2D):
 	# set the rocket's position
 	position = local_planet.position + Vector2(local_planet.radius_px * 1.5, 0)
 	
-	# give the rocket some horizontal motion to get it falling
-	# TODO calculate this
-	var direction_to_planet = local_planet.position - position
-	velocity = direction_to_planet.normalized().rotated(PI/2) * 70
+	# give the rocket some velocity to get it falling
+	var direction_from_planet = position - local_planet.position
+	# speed to achieve a circular orbit
+	var speed = sqrt((GRAVITATIONAL_CONSTANT * local_planet.mass) / direction_from_planet.length())
+	velocity = direction_from_planet.normalized().orthogonal() * speed
 	
 
