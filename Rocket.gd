@@ -46,10 +46,12 @@ func draw_orbit():
 		var distance_to_planet = position.distance_to(local_planet.position)
 		# expected angle could be one of two values
 		var expected_angle = acos((semilatus_rectum / distance_to_planet - 1) / orbital_eccentricity)
-		if (position.y >= local_planet.position.y):
-			expected_angle = abs(expected_angle)
-		else:
+		if (velocity.dot(acceleration) < 0):
+			# decelerating
 			expected_angle = -abs(expected_angle)
+		else:
+			# accelerating
+			expected_angle = abs(expected_angle)
 		var actual_angle = direction_from_planet.angle()
 		var angle_diff = expected_angle - actual_angle
 		
@@ -59,7 +61,7 @@ func draw_orbit():
 		for n in num_points:
 			var theta = (float(n) / num_points) * TAU
 			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta))
-			points.append(r * Vector2.from_angle(theta + angle_diff) - direction_from_planet)
+			points.append(r * Vector2.from_angle(theta - angle_diff) - direction_from_planet)
 		# close the loop
 		points.append(points[0])
 	
@@ -87,11 +89,11 @@ func _draw():
 func set_local_planet(planet: Area2D):
 	local_planet = planet
 	# set the rocket's position
-	position = local_planet.position + Vector2(local_planet.radius_px * 1.5, 0)
+	position = local_planet.position + Vector2(local_planet.radius_px * 2.5, 0)
 	
 	# give the rocket some horizontal motion to get it falling
 	# TODO calculate this
 	var direction_to_planet = local_planet.position - position
-	velocity = direction_to_planet.normalized().orthogonal() * 70
+	velocity = direction_to_planet.normalized().rotated(PI/3) * 50
 	
 
