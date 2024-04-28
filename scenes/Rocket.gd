@@ -1,9 +1,9 @@
 extends Area2D
 
 
+const Utils = preload("res://utils/Utils.gd")
+
 const SIZE = 8
-# a few standard orders out, but helps for simplicity
-const GRAVITATIONAL_CONSTANT = 6.674
 
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
@@ -20,7 +20,7 @@ func _process(delta):
 		return
 		
 	var direction_to_planet = local_planet.position - position
-	acceleration = direction_to_planet.normalized() * GRAVITATIONAL_CONSTANT * (local_planet.mass / direction_to_planet.length_squared())
+	acceleration = direction_to_planet.normalized() * Utils.GRAVITATIONAL_CONSTANT * (local_planet.mass / direction_to_planet.length_squared())
 	velocity += acceleration * delta
 	position += velocity * delta
 	
@@ -36,7 +36,7 @@ func draw_orbit():
 	if (local_planet):
 		# calculate the orbit in polar coordinates
 		var direction_from_planet = position - local_planet.position
-		var gravitational_parameter = GRAVITATIONAL_CONSTANT * local_planet.mass
+		var gravitational_parameter = Utils.GRAVITATIONAL_CONSTANT * local_planet.mass
 		var specific_angular_momentum = direction_from_planet.cross(velocity)
 		var semilatus_rectum = pow(specific_angular_momentum, 2) / gravitational_parameter
 		var eccentricity_vector = (pow(velocity.length(), 2) / gravitational_parameter - 1 / direction_from_planet.length()) * direction_from_planet
@@ -86,7 +86,7 @@ func draw_rocket():
 
 
 func _draw():	
-	draw_orbit()	
+	draw_orbit()
 	draw_rocket()	
 	
 	
@@ -98,7 +98,7 @@ func set_local_planet(planet: Area2D):
 	# give the rocket some velocity to get it falling
 	var direction_from_planet = position - local_planet.position
 	# speed to achieve a circular orbit
-	var speed = sqrt((GRAVITATIONAL_CONSTANT * local_planet.mass) / direction_from_planet.length())
+	var speed = sqrt((Utils.GRAVITATIONAL_CONSTANT * local_planet.mass) / direction_from_planet.length())
 	velocity = direction_from_planet.normalized().orthogonal() * speed
 	
 
