@@ -44,9 +44,14 @@ func draw_orbit():
 		var orbital_eccentricity = eccentricity_vector.length()
 		
 		var distance_to_planet = position.distance_to(local_planet.position)
+		# expected angle could be one of two values
 		var expected_angle = acos((semilatus_rectum / distance_to_planet - 1) / orbital_eccentricity)
+		if (position.y >= local_planet.position.y):
+			expected_angle = abs(expected_angle)
+		else:
+			expected_angle = -abs(expected_angle)
 		var actual_angle = direction_from_planet.angle()
-		var angle_diff = expected_angle - abs(actual_angle)
+		var angle_diff = expected_angle - actual_angle
 		
 		var num_points = 128
 		var points = PackedVector2Array()
