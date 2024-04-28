@@ -49,9 +49,9 @@ func draw_orbit():
 		# expected angle could be one of two values
 		# the choice depends on acceleration and direction
 		if (
-			# accelerating AND going clockwise
+			# accelerating AND going anti-clockwise
 			(velocity.dot(acceleration) > 0 and direction_from_planet.angle_to(velocity) < 0) or 
-			# decelerating AND going anti-clockwise
+			# decelerating AND going clockwise
 			(velocity.dot(acceleration) < 0 and direction_from_planet.angle_to(velocity) > 0)
 		):
 			expected_angle = abs(expected_angle)
@@ -63,12 +63,22 @@ func draw_orbit():
 		# actually draw the orbit
 		var num_points = 128
 		var points = PackedVector2Array()
+		var collision = false
 		for n in num_points:
-			var theta = (float(n) / num_points) * TAU
+			# negative if the rocket is going anti-clockwise
+			if (direction_from_planet.angle_to(velocity) < 0):
+				n *= -1
+			# start theta from the rocket's angle
+			var theta = (float(n) / num_points) * TAU + angle_diff + actual_angle
 			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta))
-			points.append(r * Vector2.from_angle(theta - angle_diff) - direction_from_planet)
-		# close the loop
-		points.append(points[0])
+			var point = r * Vector2.from_angle(theta - angle_diff) - direction_from_planet
+			points.append(point)
+			if (Geometry2D.is_point_in_circle(point, -direction_from_planet, local_planet.radius_px)):
+				collision = true
+				break
+		if (!collision):
+			# close the loop
+			points.append(points[0])
 		draw_polyline(points, Color.AQUA, 0.5, true)
 		
 		
