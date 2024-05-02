@@ -11,3 +11,5 @@ script = ExtResource("1_1xo77")
 
 [node name="Rocket" parent="." instance=ExtResource("2_471e6")]
 position = Vector2(945, 343)
+
+[connection signal="area_entered" from="Rocket" to="." method="_on_rocket_area_entered"]

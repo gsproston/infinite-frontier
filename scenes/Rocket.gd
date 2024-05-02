@@ -11,7 +11,8 @@ var local_planet: Area2D = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	$CollisionShape2D.shape.size.x = SIZE
+	$CollisionShape2D.shape.size.y = SIZE / 2.0
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -83,12 +84,11 @@ func draw_orbit():
 		
 		
 func draw_rocket():
-	var angle = velocity.angle()
 	var points = PackedVector2Array()
-	points.append(Vector2(-SIZE, -SIZE / 2.0).rotated(angle))
-	points.append(Vector2(-SIZE, SIZE / 2.0).rotated(angle))
-	points.append(Vector2(SIZE, SIZE / 2.0).rotated(angle))
-	points.append(Vector2(SIZE, -SIZE / 2.0).rotated(angle))
+	points.append(Vector2(-SIZE, -SIZE / 2.0))
+	points.append(Vector2(-SIZE, SIZE / 2.0))
+	points.append(Vector2(SIZE, SIZE / 2.0))
+	points.append(Vector2(SIZE, -SIZE / 2.0))
 	draw_colored_polygon(points, Color.LIGHT_GREEN)
 	
 	draw_line(Vector2.ZERO, velocity, Color.RED)

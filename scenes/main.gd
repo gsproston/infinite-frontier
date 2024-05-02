@@ -10,3 +10,8 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
+
+
+func _on_rocket_area_entered(area):
+	# Reset the rocket if it crashes
+	$Rocket.set_local_planet($Planet)
