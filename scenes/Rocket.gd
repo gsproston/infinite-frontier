@@ -1,9 +1,9 @@
 extends Area2D
 
 
+const Utils = preload("res://utils/Utils.gd")
+
 const SIZE = 8
-# a few standard orders out, but helps for simplicity
-const GRAVITATIONAL_CONSTANT = 6.674
 
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
@@ -11,7 +11,8 @@ var local_planet: Area2D = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	$CollisionShape2D.shape.size.x = SIZE
+	$CollisionShape2D.shape.size.y = SIZE / 2.0
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -20,7 +21,7 @@ func _process(delta):
 		return
 		
 	var direction_to_planet = local_planet.position - position
-	acceleration = direction_to_planet.normalized() * GRAVITATIONAL_CONSTANT * (local_planet.mass / direction_to_planet.length_squared())
+	acceleration = direction_to_planet.normalized() * Utils.GRAVITATIONAL_CONSTANT * (local_planet.mass / direction_to_planet.length_squared())
 	velocity += acceleration * delta
 	position += velocity * delta
 	
@@ -36,7 +37,7 @@ func draw_orbit():
 	if (local_planet):
 		# calculate the orbit in polar coordinates
 		var direction_from_planet = position - local_planet.position
-		var gravitational_parameter = GRAVITATIONAL_CONSTANT * local_planet.mass
+		var gravitational_parameter = Utils.GRAVITATIONAL_CONSTANT * local_planet.mass
 		var specific_angular_momentum = direction_from_planet.cross(velocity)
 		var semilatus_rectum = pow(specific_angular_momentum, 2) / gravitational_parameter
 		var eccentricity_vector = (pow(velocity.length(), 2) / gravitational_parameter - 1 / direction_from_planet.length()) * direction_from_planet
@@ -49,9 +50,9 @@ func draw_orbit():
 		# expected angle could be one of two values
 		# the choice depends on acceleration and direction
 		if (
-			# accelerating AND going clockwise
+			# accelerating AND going anti-clockwise
 			(velocity.dot(acceleration) > 0 and direction_from_planet.angle_to(velocity) < 0) or 
-			# decelerating AND going anti-clockwise
+			# decelerating AND going clockwise
 			(velocity.dot(acceleration) < 0 and direction_from_planet.angle_to(velocity) > 0)
 		):
 			expected_angle = abs(expected_angle)
@@ -63,22 +64,31 @@ func draw_orbit():
 		# actually draw the orbit
 		var num_points = 128
 		var points = PackedVector2Array()
+		var collision = false
 		for n in num_points:
-			var theta = (float(n) / num_points) * TAU
+			# negative if the rocket is going anti-clockwise
+			if (direction_from_planet.angle_to(velocity) < 0):
+				n *= -1
+			# start theta from the rocket's angle
+			var theta = (float(n) / num_points) * TAU + angle_diff + actual_angle
 			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta))
-			points.append(r * Vector2.from_angle(theta - angle_diff) - direction_from_planet)
-		# close the loop
-		points.append(points[0])
+			var point = r * Vector2.from_angle(theta - angle_diff) - direction_from_planet
+			points.append(point)
+			if (Geometry2D.is_point_in_circle(point, -direction_from_planet, local_planet.radius_px)):
+				collision = true
+				break
+		if (!collision):
+			# close the loop
+			points.append(points[0])
 		draw_polyline(points, Color.AQUA, 0.5, true)
 		
 		
 func draw_rocket():
-	var angle = velocity.angle()
 	var points = PackedVector2Array()
-	points.append(Vector2(-SIZE, -SIZE / 2.0).rotated(angle))
-	points.append(Vector2(-SIZE, SIZE / 2.0).rotated(angle))
-	points.append(Vector2(SIZE, SIZE / 2.0).rotated(angle))
-	points.append(Vector2(SIZE, -SIZE / 2.0).rotated(angle))
+	points.append(Vector2(-SIZE, -SIZE / 2.0))
+	points.append(Vector2(-SIZE, SIZE / 2.0))
+	points.append(Vector2(SIZE, SIZE / 2.0))
+	points.append(Vector2(SIZE, -SIZE / 2.0))
 	draw_colored_polygon(points, Color.LIGHT_GREEN)
 	
 	draw_line(Vector2.ZERO, velocity, Color.RED)
@@ -86,7 +96,7 @@ func draw_rocket():
 
 
 func _draw():	
-	draw_orbit()	
+	draw_orbit()
 	draw_rocket()	
 	
 	
@@ -98,7 +108,7 @@ func set_local_planet(planet: Area2D):
 	# give the rocket some velocity to get it falling
 	var direction_from_planet = position - local_planet.position
 	# speed to achieve a circular orbit
-	var speed = sqrt((GRAVITATIONAL_CONSTANT * local_planet.mass) / direction_from_planet.length())
+	var speed = sqrt((Utils.GRAVITATIONAL_CONSTANT * local_planet.mass) / direction_from_planet.length())
 	velocity = direction_from_planet.normalized().orthogonal() * speed
 	
 
