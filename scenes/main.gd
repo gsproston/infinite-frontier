@@ -3,8 +3,10 @@ extends Node
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	# Start the rocket above the planet
+	# start the rocket above the planet
 	reset_rocket()
+	# start the camera on the planet
+	$Camera2D.offset = $Planet.position
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -13,7 +15,7 @@ func _process(delta):
 
 
 func _on_rocket_area_entered(area):
-	# Reset the rocket if it crashes
+	# seset the rocket if it crashes
 	reset_rocket()
 
 
