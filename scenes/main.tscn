@@ -16,4 +16,6 @@ position = Vector2(945, 343)
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("4_lmshq")
 
+[connection signal="input_event" from="Planet" to="." method="_on_planet_input_event"]
 [connection signal="area_entered" from="Rocket" to="." method="_on_rocket_area_entered"]
+[connection signal="input_event" from="Rocket" to="." method="_on_rocket_input_event"]

@@ -3,7 +3,7 @@ extends Area2D
 
 const Utils = preload("res://utils/Utils.gd")
 
-const SIZE = 8
+const SIZE = 4
 
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
@@ -11,8 +11,8 @@ var local_planet: Area2D = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	$CollisionShape2D.shape.size.x = SIZE
-	$CollisionShape2D.shape.size.y = SIZE / 2.0
+	$CollisionShape2D.shape.size.x = SIZE * 4
+	$CollisionShape2D.shape.size.y = SIZE * 2
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -85,10 +85,10 @@ func draw_orbit():
 		
 func draw_rocket():
 	var points = PackedVector2Array()
-	points.append(Vector2(-SIZE, -SIZE / 2.0))
-	points.append(Vector2(-SIZE, SIZE / 2.0))
-	points.append(Vector2(SIZE, SIZE / 2.0))
-	points.append(Vector2(SIZE, -SIZE / 2.0))
+	points.append(Vector2(-SIZE * 2, -SIZE))
+	points.append(Vector2(-SIZE * 2, SIZE))
+	points.append(Vector2(SIZE * 2, SIZE))
+	points.append(Vector2(SIZE * 2, -SIZE))
 	draw_colored_polygon(points, Color.LIGHT_GREEN)
 	
 	draw_line(Vector2.ZERO, velocity, Color.RED)
