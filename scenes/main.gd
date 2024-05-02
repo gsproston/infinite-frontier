@@ -15,7 +15,7 @@ func _process(delta):
 
 
 func _on_rocket_area_entered(area):
-	# seset the rocket if it crashes
+	# reset the rocket if it crashes
 	reset_rocket()
 
 
