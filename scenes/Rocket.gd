@@ -3,6 +3,7 @@ extends Area2D
 
 const Utils = preload("res://utils/Utils.gd")
 
+const TURN_FACTOR = 1
 const SIZE = 4
 
 var acceleration = Vector2.ZERO
@@ -29,7 +30,12 @@ func _process(delta):
 		velocity += velocity.normalized() * delta * 10
 	elif Input.is_action_pressed("decelerate"):
 		velocity -= velocity.normalized() * delta * 10
+	if Input.is_action_pressed("turn-clockwise"):
+		rotation += TURN_FACTOR * delta
+	elif Input.is_action_pressed("turn-anti-clockwise"):
+		rotation -= TURN_FACTOR * delta
 	
+	# redraw every frame
 	queue_redraw()
 	
 	
@@ -73,7 +79,7 @@ func _draw_orbit():
 			var theta = (float(n) / num_points) * TAU + angle_diff + actual_angle
 			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta))
 			var point = r * Vector2.from_angle(theta - angle_diff) - direction_from_planet
-			points.append(point)
+			points.append(point.rotated(-rotation))
 			if (Geometry2D.is_point_in_circle(point, -direction_from_planet, local_planet.radius_px)):
 				collision = true
 				break
@@ -91,8 +97,8 @@ func _draw_rocket():
 	points.append(Vector2(SIZE * 2, -SIZE))
 	draw_colored_polygon(points, Color.LIGHT_GREEN)
 	
-	draw_line(Vector2.ZERO, velocity, Color.RED)
-	draw_line(Vector2.ZERO, acceleration, Color.PURPLE)
+	draw_line(Vector2.ZERO, velocity.rotated(-rotation), Color.RED)
+	draw_line(Vector2.ZERO, acceleration.rotated(-rotation), Color.PURPLE)
 
 
 func _draw():	
