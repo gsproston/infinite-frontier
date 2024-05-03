@@ -90,13 +90,8 @@ func _draw_orbit():
 		
 		
 func _draw_rocket():
-	var points = PackedVector2Array()
-	points.append(Vector2(-SIZE * 2, -SIZE))
-	points.append(Vector2(-SIZE * 2, SIZE))
-	points.append(Vector2(SIZE * 2, SIZE))
-	points.append(Vector2(SIZE * 2, -SIZE))
-	draw_colored_polygon(points, Color.LIGHT_GREEN)
-	
+	draw_rect(Rect2(Vector2(-SIZE * 2, -SIZE), Vector2(SIZE * 2, SIZE * 2)), Color.LIME_GREEN)
+	draw_rect(Rect2(Vector2(0, -SIZE), Vector2(SIZE * 2, SIZE * 2)), Color.LIGHT_GREEN)
 	draw_line(Vector2.ZERO, velocity.rotated(-rotation), Color.RED)
 	draw_line(Vector2.ZERO, acceleration.rotated(-rotation), Color.PURPLE)
 
