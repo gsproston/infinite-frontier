@@ -4,6 +4,8 @@ extends Area2D
 const Utils = preload("res://utils/Utils.gd")
 
 const SIZE = 4
+const SPEED_FACTOR = 10
+const TURN_FACTOR = 1
 
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
@@ -26,14 +28,19 @@ func _process(delta):
 	position += velocity * delta
 	
 	if Input.is_action_pressed("accelerate"):
-		velocity += velocity.normalized() * delta * 10
+		velocity -= Vector2.from_angle(rotation) * delta * SPEED_FACTOR
 	elif Input.is_action_pressed("decelerate"):
-		velocity -= velocity.normalized() * delta * 10
+		velocity += Vector2.from_angle(rotation) * delta * SPEED_FACTOR
+	if Input.is_action_pressed("turn-clockwise"):
+		rotation += TURN_FACTOR * delta
+	elif Input.is_action_pressed("turn-anti-clockwise"):
+		rotation -= TURN_FACTOR * delta
 	
+	# redraw every frame
 	queue_redraw()
 	
 	
-func draw_orbit():
+func _draw_orbit():
 	if (local_planet):
 		# calculate the orbit in polar coordinates
 		var direction_from_planet = position - local_planet.position
@@ -73,7 +80,7 @@ func draw_orbit():
 			var theta = (float(n) / num_points) * TAU + angle_diff + actual_angle
 			var r = semilatus_rectum / (1 + orbital_eccentricity * cos(theta))
 			var point = r * Vector2.from_angle(theta - angle_diff) - direction_from_planet
-			points.append(point)
+			points.append(point.rotated(-rotation))
 			if (Geometry2D.is_point_in_circle(point, -direction_from_planet, local_planet.radius_px)):
 				collision = true
 				break
@@ -83,21 +90,16 @@ func draw_orbit():
 		draw_polyline(points, Color.AQUA, 0.5, true)
 		
 		
-func draw_rocket():
-	var points = PackedVector2Array()
-	points.append(Vector2(-SIZE * 2, -SIZE))
-	points.append(Vector2(-SIZE * 2, SIZE))
-	points.append(Vector2(SIZE * 2, SIZE))
-	points.append(Vector2(SIZE * 2, -SIZE))
-	draw_colored_polygon(points, Color.LIGHT_GREEN)
-	
-	draw_line(Vector2.ZERO, velocity, Color.RED)
-	draw_line(Vector2.ZERO, acceleration, Color.PURPLE)
+func _draw_rocket():
+	draw_rect(Rect2(Vector2(-SIZE * 2, -SIZE), Vector2(SIZE * 2, SIZE * 2)), Color.LIME_GREEN)
+	draw_rect(Rect2(Vector2(0, -SIZE), Vector2(SIZE * 2, SIZE * 2)), Color.LIGHT_GREEN)
+	draw_line(Vector2.ZERO, velocity.rotated(-rotation), Color.RED)
+	draw_line(Vector2.ZERO, acceleration.rotated(-rotation), Color.PURPLE)
 
 
 func _draw():	
-	draw_orbit()
-	draw_rocket()	
+	_draw_orbit()
+	_draw_rocket()	
 	
 	
 func set_local_planet(planet: Area2D):

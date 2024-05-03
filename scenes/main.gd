@@ -4,7 +4,7 @@ extends Node
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# start the rocket above the planet
-	reset_rocket()
+	_reset_rocket()
 	# start the camera on the planet
 	$Camera2D.set_focus($Planet)
 
@@ -16,12 +16,7 @@ func _process(delta):
 
 func _on_rocket_area_entered(area):
 	# reset the rocket if it crashes
-	reset_rocket()
-
-
-
-func reset_rocket():
-	$Rocket.set_local_planet($Planet)
+	_reset_rocket()
 
 
 func _on_rocket_input_event(_viewport, event: InputEvent, _shape_idx):
@@ -32,3 +27,7 @@ func _on_rocket_input_event(_viewport, event: InputEvent, _shape_idx):
 func _on_planet_input_event(_viewport, event: InputEvent, _shape_idx):
 	if (event.is_action("left_click")):
 		$Camera2D.set_focus($Planet)
+
+
+func _reset_rocket():
+	$Rocket.set_local_planet($Planet)
