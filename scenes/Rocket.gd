@@ -3,8 +3,9 @@ extends Area2D
 
 const Utils = preload("res://utils/Utils.gd")
 
-const TURN_FACTOR = 1
 const SIZE = 4
+const SPEED_FACTOR = 10
+const TURN_FACTOR = 1
 
 var acceleration = Vector2.ZERO
 var velocity = Vector2.ZERO
@@ -27,9 +28,9 @@ func _process(delta):
 	position += velocity * delta
 	
 	if Input.is_action_pressed("accelerate"):
-		velocity += velocity.normalized() * delta * 10
+		velocity -= Vector2.from_angle(rotation) * delta * SPEED_FACTOR
 	elif Input.is_action_pressed("decelerate"):
-		velocity -= velocity.normalized() * delta * 10
+		velocity += Vector2.from_angle(rotation) * delta * SPEED_FACTOR
 	if Input.is_action_pressed("turn-clockwise"):
 		rotation += TURN_FACTOR * delta
 	elif Input.is_action_pressed("turn-anti-clockwise"):
