@@ -33,7 +33,7 @@ func _process(delta):
 	queue_redraw()
 	
 	
-func draw_orbit():
+func _draw_orbit():
 	if (local_planet):
 		# calculate the orbit in polar coordinates
 		var direction_from_planet = position - local_planet.position
@@ -83,7 +83,7 @@ func draw_orbit():
 		draw_polyline(points, Color.AQUA, 0.5, true)
 		
 		
-func draw_rocket():
+func _draw_rocket():
 	var points = PackedVector2Array()
 	points.append(Vector2(-SIZE * 2, -SIZE))
 	points.append(Vector2(-SIZE * 2, SIZE))
@@ -96,8 +96,8 @@ func draw_rocket():
 
 
 func _draw():	
-	draw_orbit()
-	draw_rocket()	
+	_draw_orbit()
+	_draw_rocket()	
 	
 	
 func set_local_planet(planet: Area2D):
